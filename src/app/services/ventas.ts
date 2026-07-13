@@ -43,18 +43,18 @@ export class VentasService {
   // Métodos para obtener datos relacionados
   getProductosActivos(): Observable<Producto[]> {
     console.log('Obteniendo productos activos'); // DEBUG
-    return this.http.get<Producto[]>('http://localhost:8080/api/productos/activos');
+    return this.http.get<Producto[]>('https://techstorebackend-fhbl.onrender.com/api/productos/activos');
   }
 
   getClientes(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>('http://localhost:8080/api/clientes');
+    return this.http.get<Cliente[]>('https://techstorebackend-fhbl.onrender.com/api/clientes');
   }
 
   getClienteByDni(dni: string): Observable<Cliente> {
-    return this.http.get<Cliente>(`http://localhost:8080/api/clientes/dni/${dni}`);
+    return this.http.get<Cliente>(`https://techstorebackend-fhbl.onrender.com/api/clientes/dni/${dni}`);
   }
 
   getProductosPorCategoria(categoriaId: number): Observable<Producto[]> {
-    return this.http.get<Producto[]>(`http://localhost:8080/api/productos/categoria/${categoriaId}`);
+    return this.http.get<Producto[]>(`https://techstorebackend-fhbl.onrender.com/api/productos/categoria/${categoriaId}`);
   }
 }
