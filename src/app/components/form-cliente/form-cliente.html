@@ -1,0 +1,135 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="bi bi-person me-2"></i>
+      {{ isEditMode ? 'Editar Cliente' : 'Nuevo Cliente' }}
+    </h2>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">
+            <i class="bi bi-person-lines-fill me-2"></i>
+            Información del Cliente
+          </h5>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Nombre -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Nombre Completo *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [class.is-invalid]="nombre?.invalid && nombre?.touched"
+                  formControlName="nombre"
+                  placeholder="Ingrese el nombre completo">
+                <div *ngIf="nombre?.invalid && nombre?.touched" class="invalid-feedback">
+                  <span *ngIf="nombre?.errors?.['required']">El nombre es requerido</span>
+                  <span *ngIf="nombre?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+                </div>
+              </div>
+
+              <!-- DNI -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">DNI *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [class.is-invalid]="dni?.invalid && dni?.touched"
+                  formControlName="dni"
+                  placeholder="Ingrese el DNI (8 dígitos)"
+                  maxlength="8">
+                <div *ngIf="dni?.invalid && dni?.touched" class="invalid-feedback">
+                  <span *ngIf="dni?.errors?.['required']">El DNI es requerido</span>
+                  <span *ngIf="dni?.errors?.['minlength'] || dni?.errors?.['maxlength']">El DNI debe tener 8 dígitos</span>
+                  <span *ngIf="dni?.errors?.['pattern']">Solo se permiten números</span>
+                </div>
+              </div>
+
+              <!-- Correo -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Correo Electrónico</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  [class.is-invalid]="correo?.invalid && correo?.touched"
+                  formControlName="correo"
+                  placeholder="correo@ejemplo.com">
+                <div *ngIf="correo?.invalid && correo?.touched" class="invalid-feedback">
+                  <span *ngIf="correo?.errors?.['email']">Formato de correo inválido</span>
+                </div>
+              </div>
+
+              <!-- Teléfono -->
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Teléfono</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [class.is-invalid]="telefono?.invalid && telefono?.touched"
+                  formControlName="telefono"
+                  placeholder="987654321"
+                  maxlength="9">
+                <div *ngIf="telefono?.invalid && telefono?.touched" class="invalid-feedback">
+                  <span *ngIf="telefono?.errors?.['minlength'] || telefono?.errors?.['maxlength']">El teléfono debe tener 9 dígitos</span>
+                  <span *ngIf="telefono?.errors?.['pattern']">Solo se permiten números</span>
+                </div>
+                <div class="form-text">Ejemplo: 987654321 (9 dígitos)</div>
+              </div>
+
+              <!-- Dirección -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Dirección</label>
+                <textarea
+                  class="form-control"
+                  formControlName="direccion"
+                  rows="3"
+                  placeholder="Ingrese la dirección completa"></textarea>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="d-flex gap-2 justify-content-end">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    routerLink="/clientes">
+                    <i class="bi bi-x-circle me-2"></i>
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary"
+                    [disabled]="clienteForm.invalid || isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    <i *ngIf="!isLoading" class="bi bi-check-circle me-2"></i>
+                    {{ isLoading ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

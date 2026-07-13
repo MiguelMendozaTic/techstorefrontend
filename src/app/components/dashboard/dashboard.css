@@ -1,0 +1,41 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+}
+
+.bg-opacity-10 {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+/* Estilos para las estadísticas */
+.border-end {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+@media (max-width: 768px) {
+  .border-end {
+    border-right: none !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Mejoras visuales para las cards */
+.card-body {
+  transition: all 0.3s ease;
+}
+
+.card:hover .card-body {
+  background-color: rgba(0, 123, 255, 0.02);
+}

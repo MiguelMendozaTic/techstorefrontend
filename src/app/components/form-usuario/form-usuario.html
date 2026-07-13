@@ -1,0 +1,135 @@
+<div class="container">
+    <div class="header">
+      <h2>{{ isEdit ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
+      <button class="btn btn-secondary" routerLink="/usuarios">
+        Volver
+      </button>
+    </div>
+
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="form">
+
+      <div class="form-group">
+        <label for="nombre">Nombre Completo *</label>
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
+          [class.error]="nombreControl?.invalid && nombreControl?.touched"
+          placeholder="Ingrese el nombre completo">
+        <div *ngIf="nombreControl?.invalid && nombreControl?.touched" class="error-message">
+          <div *ngIf="nombreControl?.errors?.['required']">El nombre es requerido</div>
+          <div *ngIf="nombreControl?.errors?.['minlength']">Mínimo 3 caracteres</div>
+          <div *ngIf="nombreControl?.errors?.['maxlength']">Máximo 255 caracteres</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Nombre de Usuario *</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          [class.error]="usernameControl?.invalid && usernameControl?.touched"
+          placeholder="Ingrese el nombre de usuario">
+        <div *ngIf="usernameControl?.invalid && usernameControl?.touched" class="error-message">
+          <div *ngIf="usernameControl?.errors?.['required']">El nombre de usuario es requerido</div>
+          <div *ngIf="usernameControl?.errors?.['minlength']">Mínimo 3 caracteres</div>
+          <div *ngIf="usernameControl?.errors?.['maxlength']">Máximo 255 caracteres</div>
+          <div *ngIf="usernameControl?.errors?.['duplicate']">El nombre de usuario ya existe</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">
+          Contraseña
+          <span *ngIf="isEdit">(Opcional - dejar vacío para mantener la actual)</span>
+          <span *ngIf="!isEdit" class="required">*</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          [class.error]="passwordControl?.invalid && passwordControl?.touched"
+          placeholder="{{ isEdit ? 'Dejar vacío para mantener contraseña actual' : 'Ingrese la contraseña' }}">
+        <div *ngIf="passwordControl?.invalid && passwordControl?.touched" class="error-message">
+          <div *ngFor="let error of getPasswordErrors()">{{ error }}</div>
+        </div>
+        <div *ngIf="passwordControl?.valid && !isEdit" class="success-message">
+          Contraseña válida
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="!isEdit || passwordControl?.value">
+        <label for="confirmPassword">Confirmar Contraseña *</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          [class.error]="(confirmPasswordControl?.invalid || usuarioForm.errors?.['passwordMismatch']) && confirmPasswordControl?.touched"
+          placeholder="Confirme la contraseña">
+        <div *ngIf="confirmPasswordControl?.invalid && confirmPasswordControl?.touched" class="error-message">
+          <div *ngIf="confirmPasswordControl?.errors?.['required']">Confirme la contraseña</div>
+        </div>
+        <div *ngIf="usuarioForm.errors?.['passwordMismatch'] && confirmPasswordControl?.touched" class="error-message">
+          Las contraseñas no coinciden
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rol">Rol *</label>
+        <select
+          id="rol"
+          formControlName="rol"
+          [class.error]="rolControl?.invalid && rolControl?.touched">
+          <option *ngFor="let rol of roles" [value]="rol">{{ rol }}</option>
+        </select>
+        <div *ngIf="rolControl?.invalid && rolControl?.touched" class="error-message">
+          El rol es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="estado">Estado *</label>
+        <select
+          id="estado"
+          formControlName="estado"
+          [class.error]="estadoControl?.invalid && estadoControl?.touched">
+          <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+        </select>
+        <div *ngIf="estadoControl?.invalid && estadoControl?.touched" class="error-message">
+          El estado es requerido
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          routerLink="/usuarios">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="loading || usuarioForm.invalid">
+          <span *ngIf="loading">Procesando...</span>
+          <span *ngIf="!loading">{{ isEdit ? 'Actualizar' : 'Crear' }} Usuario</span>
+        </button>
+      </div>
+    </form>
+
+    <div class="password-policy" *ngIf="!isEdit">
+      <h4>Políticas de Contraseña:</h4>
+      <ul>
+        <li [class.valid]="passwordLengthValid">Mínimo 8 caracteres</li>
+        <li [class.valid]="passwordUppercaseValid">Al menos una mayúscula (A-Z)</li>
+        <li [class.valid]="passwordLowercaseValid">Al menos una minúscula (a-z)</li>
+        <li [class.valid]="passwordNumberValid">Al menos un número (0-9)</li>
+        <li [class.valid]="passwordSpecialCharValid">Al menos un carácter especial (!@#$%^&amp;*)</li>
+      </ul>
+    </div>
+  </div>

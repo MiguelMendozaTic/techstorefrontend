@@ -1,0 +1,171 @@
+<div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar" id="sidebarMenu">
+        <div class="position-sticky pt-3 sidebar-sticky">
+          <!-- Logo y marca -->
+          <div class="text-center mb-4 p-3 border-bottom border-secondary">
+            <img src="logo.png" alt="TechStore" class="img-fluid mb-2" style="max-height: 60px;">
+            <h6 class="text-white mb-0">Sistema de TechStore</h6>
+            <small class="text-muted">{{ currentUser?.rol }}</small>
+          </div>
+
+          <!-- Menú de navegación -->
+          <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/dashboard" routerLinkActive="active">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Dashboard
+              </a>
+            </li>
+
+            <!-- Ventas -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/ventas/nueva" routerLinkActive="active">
+                <i class="bi bi-cart-plus me-2"></i>
+                Nueva Venta
+              </a>
+            </li>
+
+            <li class="nav-item" *ngIf="isAdmin()">
+              <a class="nav-link text-white" routerLink="/ventas" routerLinkActive="active">
+                <i class="bi bi-graph-up me-2"></i>
+                Reportes de Ventas
+              </a>
+            </li>
+
+            <!-- Productos -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/productos" routerLinkActive="active">
+                <i class="bi bi-box-seam me-2"></i>
+                Productos
+              </a>
+            </li>
+
+            <!-- Categorías -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/categorias" routerLinkActive="active">
+                <i class="bi bi-tags me-2"></i>
+                Categorías
+              </a>
+            </li>
+
+            <!-- Clientes -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/clientes" routerLinkActive="active">
+                <i class="bi bi-people me-2"></i>
+                Clientes
+              </a>
+            </li>
+
+            <!-- Usuarios (solo admin) -->
+            <li class="nav-item" *ngIf="isAdmin()">
+              <a class="nav-link text-white" routerLink="/usuarios" routerLinkActive="active">
+                <i class="bi bi-person-gear me-2"></i>
+                Usuarios
+              </a>
+            </li>
+
+            <!-- Ayuda -->
+            <li class="nav-item">
+              <a class="nav-link text-white" routerLink="/ayuda" routerLinkActive="active">
+                <i class="bi bi-question-circle me-2"></i>
+                Ayuda
+              </a>
+            </li>
+          </ul>
+
+          <!-- Usuario actual -->
+          <div class="border-top border-secondary mt-4 pt-3 px-3">
+            <div class="d-flex align-items-center text-white">
+              <i class="bi bi-person-circle me-2"></i>
+              <div class="flex-grow-1">
+                <small class="d-block">{{ currentUser?.nombre }}</small>
+                <small class="text-muted">{{ currentUser?.rol }}</small>
+              </div>
+              <button class="btn btn-sm btn-outline-light" (click)="logout()" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+        <!-- Top navbar para móviles -->
+        <div class="d-md-none">
+          <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <span class="navbar-brand mb-0 h1">
+                <i class="bi bi-shop me-2"></i>
+                Sistema Tienda
+              </span>
+            </div>
+          </nav>
+        </div>
+
+        <!-- Contenido dinámico -->
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+
+  <!-- Offcanvas para móviles -->
+  <div class="offcanvas offcanvas-start bg-dark text-white d-md-none" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">
+        <i class="bi bi-shop me-2"></i>
+        Menú
+      </h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/dashboard" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/ventas/nueva" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-cart-plus me-2"></i>Nueva Venta
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link text-white" routerLink="/ventas" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-graph-up me-2"></i>Reportes Ventas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/productos" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-box-seam me-2"></i>Productos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/categorias" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-tags me-2"></i>Categorías
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/clientes" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-people me-2"></i>Clientes
+          </a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link text-white" routerLink="/usuarios" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-person-gear me-2"></i>Usuarios
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" routerLink="/ayuda" routerLinkActive="active" data-bs-dismiss="offcanvas">
+            <i class="bi bi-question-circle me-2"></i>Ayuda
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>

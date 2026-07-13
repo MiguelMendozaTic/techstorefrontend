@@ -1,0 +1,30 @@
+/* Estilos personalizados para los badges de pago */
+.bg-purple {
+    background-color: #6f42c1 !important;
+  }
+  
+  /* Espaciado más compacto en la tabla */
+  .table td {
+    padding: 0.5rem 0.3rem;
+  }
+  
+  .table th {
+    padding: 0.75rem 0.3rem;
+  }
+  
+  /* Botones de acción más compactos */
+  .btn-action {
+    padding: 0.25rem 0.5rem;
+  }
+  
+  /* Texto truncado mejorado */
+  .text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Mejorar la legibilidad de las filas */
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.025);
+  }

@@ -1,0 +1,432 @@
+<div class="container-fluid">
+  <h2 class="mb-4">
+    <i class="bi bi-cash-coin me-2"></i>
+    Reporte de Ventas
+  </h2>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <h6 class="mb-0">
+        <i class="bi bi-funnel me-2"></i>
+        Filtros de Búsqueda
+      </h6>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <!-- Búsqueda general -->
+        <div class="col-md-3">
+          <label class="form-label">Búsqueda</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="bi bi-search"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Buscar por ID, cliente, DNI o vendedor..."
+              [(ngModel)]="searchTerm"
+              (input)="aplicarFiltros()">
+          </div>
+        </div>
+
+        <!-- Filtro por fecha desde -->
+        <div class="col-md-2">
+          <label class="form-label">Fecha Desde</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="filtroFechaDesde"
+            (change)="aplicarFiltros()">
+        </div>
+
+        <!-- Filtro por fecha hasta -->
+        <div class="col-md-2">
+          <label class="form-label">Fecha Hasta</label>
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="filtroFechaHasta"
+            (change)="aplicarFiltros()">
+        </div>
+
+        <!-- Filtro por estado -->
+        <div class="col-md-2">
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+            <option *ngFor="let opcion of opcionesEstado" [value]="opcion.valor">
+              {{ opcion.texto }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtro por método de pago -->
+        <div class="col-md-2">
+          <label class="form-label">Método de Pago</label>
+          <select class="form-select" [(ngModel)]="filtroMetodoPago" (change)="aplicarFiltros()">
+            <option *ngFor="let opcion of opcionesMetodoPago" [value]="opcion.valor">
+              {{ opcion.texto }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Botón limpiar -->
+        <div class="col-md-1">
+          <label class="form-label">&nbsp;</label>
+          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()" title="Limpiar filtros">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2 text-muted">Cargando ventas...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tabla de ventas -->
+  <div *ngIf="!isLoading" class="card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="bi bi-list-ul me-2"></i>
+        Lista de Ventas
+        <span class="badge bg-primary ms-2">{{ ventasFiltradas.length }}</span>
+      </h5>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-primary" (click)="cargarVentas()" title="Recargar ventas">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        <div class="btn-group">
+          <button class="btn btn-sm btn-success" (click)="exportarExcel()" title="Exportar a Excel">
+            <i class="bi bi-file-earmark-excel me-1"></i>Excel
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="exportarPDF()" title="Exportar a PDF">
+            <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div *ngIf="!isLoading && ventasFiltradas.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-cart-x display-4 d-block mb-2"></i>
+        <p>No hay ventas registradas</p>
+      </div>
+
+      <div *ngIf="!isLoading && ventasFiltradas.length > 0" class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th width="80" class="ps-3"># Venta</th>
+              <th width="100">Fecha</th>
+              <th width="180">Cliente</th>
+              <th width="160">Vendedor</th>
+              <th width="90" class="text-end">Total</th>
+              <th width="100" class="text-center">Pago</th>
+              <th width="110" class="text-center">Estado</th>
+              <th width="120" class="text-center pe-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let venta of ventasFiltradas" class="align-middle">
+              <!-- Número de Venta -->
+              <td class="ps-3">
+                <div>
+                  <strong class="d-block">V-{{ venta.id }}</strong>
+                  <small class="text-muted">#{{ venta.id }}</small>
+                </div>
+              </td>
+
+              <!-- Fecha -->
+              <td>
+                <div class="text-nowrap">
+                  <strong class="d-block">{{ venta.fecha | date:'dd/MM/yy' }}</strong>
+                  <small class="text-muted">{{ venta.fecha | date:'HH:mm' }}</small>
+                </div>
+              </td>
+
+              <!-- Cliente -->
+              <td>
+                <div>
+                  <strong class="d-block text-truncate" style="max-width: 160px;">
+                    {{ venta.cliente?.nombre || 'Cliente no registrado' }}
+                  </strong>
+                  <small class="text-muted">
+                    <i class="bi bi-person-badge me-1"></i>
+                    {{ venta.cliente?.dni || 'N/A' }}
+                  </small>
+                </div>
+              </td>
+
+              <!-- Vendedor -->
+              <td>
+                <div>
+                  <strong class="d-block text-truncate" style="max-width: 140px;">
+                    {{ venta.usuario?.nombre || 'Vendedor no registrado' }}
+                  </strong>
+                  <small class="text-muted">
+                    <i class="bi bi-at me-1"></i>
+                    {{ venta.usuario?.username || 'N/A' }}
+                  </small>
+                </div>
+              </td>
+
+              <!-- Total -->
+              <td class="text-end">
+                <div>
+                  <strong class="text-success d-block">S/. {{ venta.total | number:'1.2-2' }}</strong>
+                </div>
+              </td>
+
+              <!-- Tipo de Pago -->
+              <td class="text-center">
+                <span class="badge" [ngClass]="getPagoBadgeClass(venta.tipoPago)">
+                  {{ venta.tipoPago }}
+                </span>
+              </td>
+
+              <!-- Estado -->
+              <td class="text-center">
+                <span [class]="getBadgeClass(venta.estado)" class="badge">
+                  {{ venta.estado }}
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td class="text-center pe-3">
+                <div class="btn-group btn-group-sm" role="group">
+                  <button
+                    class="btn btn-outline-primary btn-action"
+                    (click)="verDetalle(venta)"
+                    title="Ver detalle de venta">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-danger btn-action"
+                    (click)="cancelarVenta(venta.id!)"
+                    [disabled]="venta.estado === 'CANCELADA'"
+                    [class.opacity-25]="venta.estado === 'CANCELADA'"
+                    title="Cancelar venta">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer bg-light position-sticky bottom-0">
+      <!-- Footer con estadísticas -->
+      <div *ngIf="!isLoading && ventasFiltradas.length > 0" class="card-footer bg-light">
+        <div class="row text-center">
+          <div class="col-md-3 border-end">
+            <div class="d-flex flex-column">
+              <small class="text-muted">Total Ventas</small>
+              <span class="fw-bold text-primary fs-5">{{ ventasFiltradas.length }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 border-end">
+            <div class="d-flex flex-column">
+              <small class="text-muted">Completadas</small>
+              <span class="fw-bold text-success fs-5">{{ ventasCompletadas }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 border-end">
+            <div class="d-flex flex-column">
+              <small class="text-muted">Canceladas</small>
+              <span class="fw-bold text-danger fs-5">{{ ventasCanceladas }}</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="d-flex flex-column">
+              <small class="text-muted">Total General</small>
+              <span class="fw-bold text-success fs-5">
+                S/ {{ calcularTotalGeneral().toFixed(2) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver detalle de venta con IGV -->
+<div class="modal fade" #detalleVentaModal id="detalleVentaModal" tabindex="-1" aria-labelledby="detalleVentaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="detalleVentaModalLabel">
+          <i class="bi bi-receipt me-2"></i>
+          Detalle de Venta #{{ ventaSeleccionada?.id }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Información general de la venta -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6 class="text-muted">Información de la Venta</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Número:</strong></td>
+                <td>V-{{ ventaSeleccionada?.id }}</td>
+              </tr>
+              <tr>
+                <td><strong>Fecha:</strong></td>
+                <td>{{ ventaSeleccionada?.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Estado:</strong></td>
+                <td>
+                  <span [class]="getBadgeClass(ventaSeleccionada?.estado || '')">
+                    {{ ventaSeleccionada?.estado }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Tipo de Pago:</strong></td>
+                <td>{{ ventaSeleccionada?.tipoPago }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted">Información del Cliente</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Nombre:</strong></td>
+                <td>{{ ventaSeleccionada?.cliente?.nombre || 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>DNI:</strong></td>
+                <td>{{ ventaSeleccionada?.cliente?.dni || 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Teléfono:</strong></td>
+                <td>{{ ventaSeleccionada?.cliente?.telefono || 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Correo:</strong></td>
+                <td>{{ ventaSeleccionada?.cliente?.correo || 'N/A' }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Detalles de productos -->
+        <h6 class="text-muted mb-3">Productos Vendidos</h6>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead class="table-light">
+              <tr>
+                <th width="50">#</th>
+                <th>Producto</th>
+                <th width="100" class="text-center">Cantidad</th>
+                <th width="120" class="text-end">Precio Unit.</th>
+                <th width="120" class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of ventaSeleccionada?.detalles; let i = index">
+                <td class="text-center">{{ i + 1 }}</td>
+                <td>
+                  <div>
+                    <strong>{{ detalle.producto?.nombre || 'Producto no encontrado' }}</strong>
+                    <br>
+                    <small class="text-muted">{{ detalle.producto?.descripcion || 'Sin descripción' }}</small>
+                  </div>
+                </td>
+                <td class="text-center">{{ detalle.cantidad }}</td>
+                <td class="text-end">S/ {{ detalle.precioUnitario | number:'1.2-2' }}</td>
+                <td class="text-end">S/ {{ detalle.subtotal | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+            <tfoot class="table-light">
+              <!-- SUBTOTAL -->
+              <tr>
+                <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                <td class="text-end"><strong>S/ {{ (ventaSeleccionada?.subtotal || 0) | number:'1.2-2' }}</strong></td>
+              </tr>
+              <!-- IGV -->
+              <tr>
+                <td colspan="4" class="text-end"><strong>IGV (18%):</strong></td>
+                <td class="text-end"><strong>S/ {{ (ventaSeleccionada?.igv || 0) | number:'1.2-2' }}</strong></td>
+              </tr>
+              <!-- TOTAL -->
+              <tr>
+                <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                <td class="text-end"><strong class="text-primary">S/ {{ ventaSeleccionada?.total | number:'1.2-2' }}</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <h6 class="text-muted">Información del Vendedor</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Vendedor:</strong></td>
+                <td>{{ ventaSeleccionada?.usuario?.nombre || 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Usuario:</strong></td>
+                <td>{{ ventaSeleccionada?.usuario?.username || 'N/A' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Rol:</strong></td>
+                <td>{{ ventaSeleccionada?.usuario?.rol || 'N/A' }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted">Resumen de Montos</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Subtotal:</strong></td>
+                <td class="text-end">S/ {{ (ventaSeleccionada?.subtotal || 0) | number:'1.2-2' }}</td>
+              </tr>
+              <tr>
+                <td><strong>IGV (18%):</strong></td>
+                <td class="text-end">S/ {{ (ventaSeleccionada?.igv || 0) | number:'1.2-2' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Total:</strong></td>
+                <td class="text-end"><strong class="text-success">S/ {{ ventaSeleccionada?.total | number:'1.2-2' }}</strong></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>
+          Cerrar
+        </button>
+        <button
+          *ngIf="ventaSeleccionada?.estado !== 'CANCELADA'"
+          type="button"
+          class="btn btn-danger"
+          (click)="cancelarDesdeModal()"
+          data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>
+          Cancelar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

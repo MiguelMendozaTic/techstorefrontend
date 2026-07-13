@@ -1,0 +1,139 @@
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>
+        <i class="bi bi-tag me-2"></i>
+        {{ isEdit ? 'Editar Categoría' : 'Nueva Categoría' }}
+      </h2>
+      <button class="btn btn-outline-secondary" routerLink="/categorias">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver a Categorías
+      </button>
+    </div>
+  
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header bg-white">
+            <h5 class="mb-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Información de la Categoría
+            </h5>
+          </div>
+          <div class="card-body">
+            <!-- Mensajes -->
+            <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+            </div>
+  
+            <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle me-2"></i>
+              {{ successMessage }}
+              <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+            </div>
+  
+            <!-- Loading -->
+            <div *ngIf="isLoading && isEdit" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2 text-muted">Cargando categoría...</p>
+            </div>
+  
+            <!-- Formulario -->
+            <form *ngIf="!isLoading" [formGroup]="categoriaForm" (ngSubmit)="onSubmit()">
+              <div class="row">
+                <!-- Nombre -->
+                <div class="col-md-6 mb-3">
+                  <label for="nombre" class="form-label">Nombre de la Categoría *</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      [class.is-invalid]="nombre?.invalid && nombre?.touched"
+                      [class.is-valid]="nombre?.valid && nombre?.touched"
+                      id="nombre"
+                      formControlName="nombre"
+                      placeholder="Ingresa el nombre de la categoría">
+                    <div *ngIf="isVerificando" class="input-group-text">
+                      <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Verificando...</span>
+                      </div>
+                    </div>
+                    <div *ngIf="!isVerificando && nombre?.valid && nombre?.touched" class="input-group-text text-success">
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div *ngIf="nombre?.invalid && nombre?.touched" class="input-group-text text-danger">
+                      <i class="bi bi-x-lg"></i>
+                    </div>
+                  </div>
+                  <div *ngIf="nombre?.invalid && nombre?.touched" class="invalid-feedback d-block">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    {{ getMensajeError('nombre') }}
+                  </div>
+                  <div *ngIf="nombre?.valid && nombre?.touched && !isVerificando" class="valid-feedback d-block">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Nombre disponible
+                  </div>
+                  <div class="form-text">Nombre único de la categoría. No puede repetirse.</div>
+                </div>
+  
+                <!-- Estado -->
+                <div class="col-md-6 mb-3">
+                  <label for="estado" class="form-label">Estado *</label>
+                  <select
+                    class="form-select"
+                    [class.is-invalid]="estado?.invalid && estado?.touched"
+                    [class.is-valid]="estado?.valid && estado?.touched"
+                    id="estado"
+                    formControlName="estado">
+                    <option *ngFor="let estado of estados" [value]="estado">
+                      {{ estado }}
+                    </option>
+                  </select>
+                  <div *ngIf="estado?.invalid && estado?.touched" class="invalid-feedback d-block">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    {{ getMensajeError('estado') }}
+                  </div>
+                </div>
+              </div>
+  
+              <!-- Descripción -->
+              <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción</label>
+                <textarea
+                  class="form-control"
+                  id="descripcion"
+                  formControlName="descripcion"
+                  rows="3"
+                  placeholder="Descripción opcional de la categoría"></textarea>
+                <div class="form-text">Describe el propósito o características de esta categoría (opcional)</div>
+              </div>
+  
+              <!-- Botones -->
+              <div class="d-flex justify-content-between align-items-center mt-4">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  routerLink="/categorias">
+                  <i class="bi bi-x-circle me-2"></i>
+                  Cancelar
+                </button>
+  
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="categoriaForm.invalid || isLoading || isVerificando">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  <span *ngIf="isVerificando" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!isLoading && !isVerificando" class="bi" [class.bi-save]="isEdit" [class.bi-plus-circle]="!isEdit"></i>
+                  {{ isLoading ? 'Guardando...' : isVerificando ? 'Verificando...' : (isEdit ? 'Actualizar Categoría' : 'Crear Categoría') }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

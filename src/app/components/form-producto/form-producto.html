@@ -1,0 +1,306 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      <i class="bi bi-box-seam me-2"></i>
+      {{ isEdit ? 'Editar Producto' : 'Nuevo Producto' }}
+    </h2>
+    <button class="btn btn-outline-secondary" routerLink="/productos">
+      <i class="bi bi-arrow-left me-2"></i>
+      Volver a Productos
+    </button>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            Información del Producto
+          </h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+          </div>
+
+          <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+          </div>
+
+          <div *ngIf="(isLoading && isEdit) || isLoadingCategorias" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2 text-muted">{{ isLoadingCategorias ? 'Cargando categorías...' : 'Cargando producto...' }}</p>
+          </div>
+
+          <form *ngIf="!isLoading && !isLoadingCategorias" [formGroup]="productoForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Nombre -->
+              <div class="col-md-6 mb-3">
+                <label for="nombre" class="form-label">Nombre del Producto *</label>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control"
+                    [class.is-invalid]="nombre?.invalid && nombre?.touched"
+                    [class.is-valid]="nombre?.valid && nombre?.touched"
+                    id="nombre"
+                    formControlName="nombre"
+                    placeholder="Ingresa el nombre del producto">
+                  <div *ngIf="isVerificando" class="input-group-text">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                      <span class="visually-hidden">Verificando...</span>
+                    </div>
+                  </div>
+                  <div *ngIf="!isVerificando && nombre?.valid && nombre?.touched" class="input-group-text text-success">
+                    <i class="bi bi-check-lg"></i>
+                  </div>
+                  <div *ngIf="nombre?.invalid && nombre?.touched" class="input-group-text text-danger">
+                    <i class="bi bi-x-lg"></i>
+                  </div>
+                </div>
+                <div *ngIf="nombre?.invalid && nombre?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('nombre') }}
+                </div>
+                <div *ngIf="nombre?.valid && nombre?.touched && !isVerificando" class="valid-feedback d-block">
+                  <i class="bi bi-check-circle me-1"></i>
+                  Nombre disponible en esta categoría
+                </div>
+                <div class="form-text">Nombre descriptivo del producto. No puede repetirse en la misma categoría.</div>
+              </div>
+
+              <!-- Categoría -->
+              <div class="col-md-6 mb-3">
+                <label for="categoriaId" class="form-label">Categoría *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="categoriaId?.invalid && categoriaId?.touched"
+                  [class.is-valid]="categoriaId?.valid && categoriaId?.touched"
+                  id="categoriaId"
+                  formControlName="categoriaId">
+                  <option value="">Selecciona una categoría</option>
+                  <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                    {{ categoria.nombre }}
+                  </option>
+                </select>
+                <div *ngIf="categoriaId?.invalid && categoriaId?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('categoriaId') }}
+                </div>
+                <div class="form-text">Selecciona la categoría del producto</div>
+              </div>
+            </div>
+
+            <!-- Marca y Modelo -->
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="marca" class="form-label">Marca</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="marca"
+                  formControlName="marca"
+                  placeholder="Ej: Samsung, Apple, HP...">
+                <div class="form-text">Marca del producto (opcional)</div>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="modelo" class="form-label">Modelo</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="modelo"
+                  formControlName="modelo"
+                  placeholder="Ej: Galaxy S24, iPhone 15...">
+                <div class="form-text">Modelo específico del producto (opcional)</div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripción *</label>
+              <textarea
+                class="form-control"
+                [class.is-invalid]="descripcion?.invalid && descripcion?.touched"
+                [class.is-valid]="descripcion?.valid && descripcion?.touched"
+                id="descripcion"
+                formControlName="descripcion"
+                rows="3"
+                placeholder="Descripción detallada del producto"></textarea>
+              <div *ngIf="descripcion?.invalid && descripcion?.touched" class="invalid-feedback d-block">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                {{ getMensajeError('descripcion') }}
+              </div>
+              <div class="form-text">Describe las características principales del producto</div>
+            </div>
+
+            <div class="row">
+              <!-- Precio Compra -->
+              <div class="col-md-4 mb-3">
+                <label for="precioCompra" class="form-label">Precio de Compra *</label>
+                <div class="input-group">
+                  <span class="input-group-text">S/</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [class.is-invalid]="precioCompra?.invalid && precioCompra?.touched"
+                    [class.is-valid]="precioCompra?.valid && precioCompra?.touched"
+                    id="precioCompra"
+                    formControlName="precioCompra"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00">
+                </div>
+                <div *ngIf="precioCompra?.invalid && precioCompra?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('precioCompra') }}
+                </div>
+              </div>
+
+              <!-- Precio Venta -->
+              <div class="col-md-4 mb-3">
+                <label for="precioVenta" class="form-label">Precio de Venta *</label>
+                <div class="input-group">
+                  <span class="input-group-text">S/</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [class.is-invalid]="precioVenta?.invalid && precioVenta?.touched"
+                    [class.is-valid]="precioVenta?.valid && precioVenta?.touched"
+                    id="precioVenta"
+                    formControlName="precioVenta"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00">
+                </div>
+                <div *ngIf="precioVenta?.invalid && precioVenta?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('precioVenta') }}
+                </div>
+                <div *ngIf="productoForm.hasError('precioInvalido') && precioVenta?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  El precio de venta debe ser mayor o igual al precio de compra
+                </div>
+              </div>
+
+              <!-- Ganancia -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Margen de Ganancia</label>
+                <div class="form-control bg-light">
+                  <strong [class]="calcularGanancia() >= 0 ? 'text-success' : 'text-danger'">
+                    {{ calcularGanancia().toFixed(2) }}%
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Cantidad -->
+              <div class="col-md-3 mb-3">
+                <label for="cantidad" class="form-label">Cantidad en Stock *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [class.is-invalid]="cantidad?.invalid && cantidad?.touched"
+                  [class.is-valid]="cantidad?.valid && cantidad?.touched"
+                  id="cantidad"
+                  formControlName="cantidad"
+                  min="0"
+                  placeholder="0">
+                <div *ngIf="cantidad?.invalid && cantidad?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('cantidad') }}
+                </div>
+              </div>
+
+              <!-- Stock Mínimo -->
+              <div class="col-md-3 mb-3">
+                <label for="stockMinimo" class="form-label">Stock Mínimo *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [class.is-invalid]="stockMinimo?.invalid && stockMinimo?.touched"
+                  [class.is-valid]="stockMinimo?.valid && stockMinimo?.touched"
+                  id="stockMinimo"
+                  formControlName="stockMinimo"
+                  min="1"
+                  placeholder="10">
+                <div *ngIf="stockMinimo?.invalid && stockMinimo?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('stockMinimo') }}
+                </div>
+                <div class="form-text">Alerta cuando el stock sea menor</div>
+              </div>
+
+              <!-- Unidad -->
+              <div class="col-md-3 mb-3">
+                <label for="unidad" class="form-label">Unidad de Medida *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="unidad?.invalid && unidad?.touched"
+                  [class.is-valid]="unidad?.valid && unidad?.touched"
+                  id="unidad"
+                  formControlName="unidad">
+                  <option *ngFor="let unidad of unidades" [value]="unidad">
+                    {{ unidad }}
+                  </option>
+                </select>
+                <div *ngIf="unidad?.invalid && unidad?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('unidad') }}
+                </div>
+              </div>
+
+              <!-- Estado -->
+              <div class="col-md-3 mb-3">
+                <label for="estado" class="form-label">Estado *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="estado?.invalid && estado?.touched"
+                  [class.is-valid]="estado?.valid && estado?.touched"
+                  id="estado"
+                  formControlName="estado">
+                  <option *ngFor="let estado of estados" [value]="estado">
+                    {{ estado }}
+                  </option>
+                </select>
+                <div *ngIf="estado?.invalid && estado?.touched" class="invalid-feedback d-block">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  {{ getMensajeError('estado') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                routerLink="/productos">
+                <i class="bi bi-x-circle me-2"></i>
+                Cancelar
+              </button>
+
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="productoForm.invalid || isLoading || isVerificando">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                <span *ngIf="isVerificando" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!isLoading && !isVerificando" class="bi" [class.bi-save]="isEdit" [class.bi-plus-circle]="!isEdit"></i>
+                {{ isLoading ? 'Guardando...' : isVerificando ? 'Verificando...' : (isEdit ? 'Actualizar Producto' : 'Crear Producto') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

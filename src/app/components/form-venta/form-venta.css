@@ -1,0 +1,100 @@
+.detalle-venta {
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff !important;
+}
+
+.detalle-venta:hover {
+  background-color: #e9ecef;
+}
+
+.sticky-top {
+  top: 20px;
+}
+
+.form-control:read-only {
+  background-color: #f8f9fa;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.alert {
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
+/* Mensaje Toast flotante para venta exitosa */
+.toast-venta-exitosa {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 320px;
+  animation: slideInRight 0.5s ease-out;
+}
+
+.toast-venta-exitosa .alert {
+  border-left: 4px solid #198754;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Efecto de desvanecimiento al cerrar */
+.toast-venta-exitosa.fade-out {
+  animation: slideOutRight 0.5s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .detalle-venta .row > div {
+    margin-bottom: 10px;
+  }
+  
+  .sticky-top {
+    position: relative !important;
+  }
+  
+  .toast-venta-exitosa {
+    min-width: 280px;
+    right: 10px;
+    left: 10px;
+  }
+}
