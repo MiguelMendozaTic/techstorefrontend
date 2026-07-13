@@ -1,3 +1,6 @@
 {
-  "outputDirectory": "dist/techstorefrontend"
+  "outputDirectory": "dist/techstorefrontend",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
