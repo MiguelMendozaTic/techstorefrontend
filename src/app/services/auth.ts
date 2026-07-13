@@ -21,7 +21,7 @@ export interface LoginRequest {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'https://techstorebackend-fhbl.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 

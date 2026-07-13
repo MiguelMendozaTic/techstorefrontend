@@ -9,7 +9,7 @@ import { Cliente } from '../interfaces/cliente';
 })
 export class VentasService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/ventas';
+  private apiUrl = 'https://techstorebackend-fhbl.onrender.com/api/ventas';
 
   getVentas(): Observable<Venta[]> {
     console.log('Obteniendo ventas desde:', this.apiUrl); // DEBUG

@@ -8,7 +8,7 @@ import { Cliente } from '../interfaces/cliente';
 })
 export class ClientesService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/clientes';
+  private apiUrl = 'https://techstorebackend-fhbl.onrender.com/api/clientes';
 
   getClientes(): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(this.apiUrl);

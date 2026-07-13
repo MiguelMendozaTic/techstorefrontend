@@ -8,7 +8,7 @@ import { Categoria } from '../interfaces/categoria';
 })
 export class CategoriasService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/categorias';
+  private apiUrl = 'https://techstorebackend-fhbl.onrender.com/api/categorias';
 
   getCategorias(): Observable<Categoria[]> {
     return this.http.get<Categoria[]>(this.apiUrl);
@@ -37,11 +37,11 @@ export class CategoriasService {
   // verificar si existe una categoría con el mismo nombre
   verificarCategoriaExistente(nombre: string, categoriaId?: number): Observable<boolean> {
     let params: any = { nombre };
-    
+
     if (categoriaId) {
       params.categoriaId = categoriaId.toString();
     }
-    
+
     return this.http.get<boolean>(`${this.apiUrl}/verificar`, { params });
   }
 }

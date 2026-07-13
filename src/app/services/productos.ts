@@ -8,7 +8,7 @@ import { Producto } from '../interfaces/producto';
 })
 export class ProductosService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/productos';
+  private apiUrl = 'https://techstorebackend-fhbl.onrender.com/api/productos';
 
   getProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.apiUrl);
@@ -50,8 +50,8 @@ export class ProductosService {
   // verificar si existe un producto con el mismo nombre en la misma categoría
   verificarProductoExistente(nombre: string, categoriaId: number, productoId?: number): Observable<boolean> {
     return this.http.get<boolean>(`${this.apiUrl}/verificar`, {
-      params: { 
-        nombre, 
+      params: {
+        nombre,
         categoriaId: categoriaId.toString(),
         productoId: productoId ? productoId.toString() : ''
       }
